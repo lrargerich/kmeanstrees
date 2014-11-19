@@ -12,13 +12,16 @@ import numpy as np
 
 print "A simple demo of K-Means Trees"
 
+# A large distance constant
+LARGE_DISTANCE = 999999999
+
 # Number of points
-N = 1000000
+N = 50
 # Number of dimensions
 dims = 2
 # The amount of points in each cluster, this is the 
 # maximum number of distances that need to be calculated
-k = 100
+k = 10
 
 # An internal count for the number of distances computed
 computed_distances = 0
@@ -62,13 +65,27 @@ def find_closest_centroid(point,node_points):
 # and then recursively call for the points in the closest centroid
 # so in all it will not do more than levels * k. Being levels in O(log(N))
 def find_k_nearest_neighbors(point,node,k):
-	# An empty vector for the nearest neighbors
-	nn = []
-	# CODEAAAAAAAAAAAAAAAAAARRRRRRRRRRRRRRRRRRRRRRRRRRRRR
-	# find the k nearest neighbors in the node
-	# if the node has points then call recursively
+	# Do this nicely
+	# use heap with (distance,point)
+	# for the nearest neighbor expand (recursively)
 	# merge the results
-	return "I like your t-shirt"
+	heap = []
+	max_distance = 999999
+	for i in range(0,len(node['points'])):
+		new_point = node['points'][i]['c']
+		distance = compute_distance(point,new_point,max_distance)
+		if distance<max_distance or len(heap)<k:
+			heap.append((distance,new_point,i))
+			# Sort and keep the k minimum distances
+			heap = sorted(heap)
+			heap = heap[:k]
+			(max_distance,max_point,i) = heap[len(heap)-1]
+	if len(heap)>0:
+		(di,pt,best_i)=heap[0]
+		heap.extend(find_k_nearest_neighbors(point,node['points'][best_i],k))
+		heap = sorted(heap)
+		heap = heap[:k]
+	return heap
 
 # Inserts a point in the node
 # if the node has space then we just add the point and adjust the centroid
@@ -92,6 +109,13 @@ for i in range(0,N):
 	insert(point,root)
 
 print "----------------------"
-#pprint(root)
+pprint(root)
 print "Done!"
 print "Computed distances:"+str(computed_distances)
+
+for i in range(0,10):
+	some_point = [random.random() for _ in range(0,dims)]
+	print "Now searching for:"
+	pprint(some_point)
+	l = find_k_nearest_neighbors(some_point,root,3)
+	pprint(l)
