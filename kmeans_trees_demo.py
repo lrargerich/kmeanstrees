@@ -16,7 +16,7 @@ print "A simple demo of K-Means Trees"
 LARGE_DISTANCE = 999999999
 
 # Number of points
-N = 120000
+N = 12000
 # Number of dimensions
 dims = 2
 # The amount of points in each cluster, this is the 
@@ -92,9 +92,10 @@ def find_k_nearest_neighbors(point,node,k):
 	if len(node['points'])>0:
 		best_centroid = find_closest_centroid(point,node['points'])
 		#print "best_centroid:"+str(best_centroid)
-		heap.extend(find_k_nearest_neighbors(point,node['points'][best_centroid],k))
-		heap = sorted(heap)
-		heap = heap[:k]
+		if node['points'][best_centroid]['n']>0:
+			heap.extend(find_k_nearest_neighbors(point,node['points'][best_centroid],k))
+			heap = sorted(heap)
+			heap = heap[:k]
 	return heap
 
 # Inserts a point in the node
@@ -106,11 +107,12 @@ def insert(point,node):
 	node_point = {"c":point,"n":0,"points":[]}
 	
 	# If we are inserting in a node without points, then convert the centroid to a point first
+	# We deepcopy the node because we are going to change the centroid (!)
 	if node['n']==0:
 		node['points'].append({"c":copy.deepcopy(node['c']),"n":0,"points":[]})
 		node['n']+=1
 
-	# Now we have a centroid and less than k points so we append
+	# Now if we have a centroid and less than k points  we append
 	if node['n']<k:
 		node['points'].append(node_point)
 		node['n']+=1
