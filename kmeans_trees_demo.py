@@ -21,7 +21,7 @@ N = 120000
 dims = 2
 # The amount of points in each cluster, this is the 
 # maximum number of distances that need to be calculated
-k = 3
+k = 10
 
 # An internal count for the number of distances computed
 computed_distances = 0
@@ -104,9 +104,13 @@ def find_k_nearest_neighbors(point,node,k):
 def insert(point,node):
 	# Convert the point to a node
 	node_point = {"c":point,"n":0,"points":[]}
+	
+	# If we are inserting in a node without points, then convert the centroid to a point first
 	if node['n']==0:
 		node['points'].append({"c":copy.deepcopy(node['c']),"n":0,"points":[]})
 		node['n']+=1
+
+	# Now we have a centroid and less than k points so we append
 	if node['n']<k:
 		node['points'].append(node_point)
 		node['n']+=1
