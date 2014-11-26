@@ -16,12 +16,12 @@ print "A simple demo of K-Means Trees"
 LARGE_DISTANCE = 999999999
 
 # Number of points
-N = 12000
+N = 1200000
 # Number of dimensions
-dims = 2
+dims = 2000
 # The amount of points in each cluster, this is the 
 # maximum number of distances that need to be calculated
-k = 10
+k = 100
 
 # An internal count for the number of distances computed
 computed_distances = 0
